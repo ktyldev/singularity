@@ -1,4 +1,4 @@
-#card-container {
+#post-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -8,27 +8,28 @@
 
 @media only screen and (min-width: 768px) {
     /* For bigger than phones */
-    #card-container {
-        max-width: 600px !important;
+    #post-container {
+        max-width: 600px;
+    }
+
+    #loader {
+        max-width: 600px;
     }
 }
 
-.card {
+.post {
     height: 55vh;
     width: calc(100% - 16px);
     margin: 8px;
     border-radius: 3px;
     transition: all 200ms ease-in-out;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
-.card:hover {
+.post:hover {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-.card-actions {
+.post-actions {
     margin: 8px;
     padding: 16px 0;
     display: flex;
@@ -38,9 +39,11 @@
 
 #loader {
     display: flex;
+    justify-content: center;
+    margin-inline: auto;
 }
 
-.skeleton-card {
+.skeleton-post {
     height: 55vh;
     width: calc(100% - 16px);
     margin: 8px;
@@ -50,7 +53,7 @@
     background-color: #eaeaea;
 }
 
-.skeleton-card::after {
+.skeleton-post::after {
     content: "";
     position: absolute;
     top: 0;
@@ -59,14 +62,4 @@
     left: 0;
     transform: translateX(-100%);
     background-image: linear-gradient(90deg, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0.2) 20%, rgba(255, 255, 255, 0.5) 60%, rgba(255, 255, 255, 0));
-    animation: load is infinite;
-}
-
-@keyframes load {
-    100% {
-        transform: translateX(100%);
-    }
-}
-
-@media screen and (prefers-reduced-motion: reduce) {
 }
