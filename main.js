@@ -54,7 +54,13 @@ class Post {
         // add a header to the post
         const headerElem = document.createElement("h1");
         headerElem.innerHTML = this.username;
-        postElem.appendChild(headerElem);
+
+        const profileLinkElem = document.createElement("a");
+        profileLinkElem.setAttribute("href", "#");
+        profileLinkElem.addEventListener("click", () => updateUserProfile(this.username));
+        profileLinkElem.appendChild(headerElem);
+
+        postElem.appendChild(profileLinkElem);
 
         // TODO: add content to the post
         const contentElem = document.createElement("p");
@@ -63,6 +69,50 @@ class Post {
 
         return postElem;
     }
+}
+
+
+var userProfile = null;
+class UserProfile {
+    constructor(username) {
+        this.username = username;
+        this.bio = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+
+        this.elem = document.getElementById("profile");
+        this.nameElem = document.getElementById("profile-name");
+        this.descElem = document.getElementById("profile-description");
+    }
+
+    show() {
+        this.nameElem.innerHTML = this.username;
+        this.descElem.innerHTML = this.bio;
+        this.elem.style.visibility = "visible";
+    }
+
+    hide() {
+        this.descElem.innerHTML = "";
+        this.nameElem.innerHTML = "";
+        this.elem.style.visibility = "hidden";
+    }
+}
+
+
+function goToHome() {
+    updateUserProfile(null);
+}
+
+
+function updateUserProfile(username) {
+    if (userProfile != null) {
+        userProfile.hide();
+        userProfile = null;
+    }
+
+    if (!username)
+        return;
+
+    userProfile = new UserProfile(username);
+    userProfile.show();
 }
 
 

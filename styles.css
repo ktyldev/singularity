@@ -1,13 +1,31 @@
-#post-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-inline: auto;
+#home {
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+/* TODO: deal with visibility when screen cuts off left side */
+/* TODO: how do we show the profile on mobile */
+#profile {
+    /* profile starts hidden */
+    visibility: hidden;
+    position: fixed;
+    right: calc(50% + 300px + 8px);
+    left: auto;
+    top: 16px;
+    height: 600px;
     width: 100%;
+    max-width: 300px;
+
+    background-color: red;
 }
 
 @media only screen and (min-width: 768px) {
     /* For bigger than phones */
+    #profile {
+        visibility: visible;
+    }
+
     #post-container {
         max-width: 600px;
     }
@@ -15,6 +33,15 @@
     #loader {
         max-width: 600px;
     }
+}
+
+
+#post-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-inline: auto;
+    width: 100%;
 }
 
 .post {
