@@ -1,11 +1,21 @@
 #card-container {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
+    margin-inline: auto;
+    width: 100%;
+}
+
+@media only screen and (min-width: 768px) {
+    /* For bigger than phones */
+    #card-container {
+        max-width: 600px !important;
+    }
 }
 
 .card {
     height: 55vh;
-    width: calc((100% / 3) - 16px);
+    width: calc(100% - 16px);
     margin: 8px;
     border-radius: 3px;
     transition: all 200ms ease-in-out;
@@ -32,7 +42,7 @@
 
 .skeleton-card {
     height: 55vh;
-    width: calc((100% / 3) - 16px);
+    width: calc(100% - 16px);
     margin: 8px;
     border-radius: 3px;
     transition: all 200ms ease-in-out;
