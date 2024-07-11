@@ -1,0 +1,27 @@
+<html>
+<head>
+    <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+
+<!-- cards are added by JavaScript so it starts empty -->
+<div id="card-container"></div>
+
+<!-- loader displays an animation before adding the next batch of cards -->
+<div id="loader">
+    <div class="skeleton-card"></div>
+    <div class="skeleton-card"></div>
+    <div class="skeleton-card"></div>
+</div>
+
+<!-- card actions shows the card count and card total (we probably do not need this) -->
+<div id="card-actions">
+    <span>Showing
+        <span id="card-count"></span> of
+        <span id="card-total"></span> cards
+    </span>
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>
