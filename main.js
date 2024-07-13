@@ -120,11 +120,6 @@ class UserProfile {
 }
 
 
-function goToHome() {
-    updateUserProfile(null);
-}
-
-
 function updateUserProfile(username) {
     if (userProfile != null) {
         userProfile.hide();
