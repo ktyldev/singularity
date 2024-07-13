@@ -27,7 +27,14 @@ function getUsername() {
     const usernames = [
         "xXPu55y5l4y3r69Xx",
         "Keef Farmer",
-        "Alan"
+        "Alan",
+        "mongle boy",
+        "girlthing",
+        "doggle poggle",
+        "catlicker",
+        "350 million for the nhs",
+        "thoughts were a mistake",
+        "410,757,864,530 FRIENDS MADE"
     ];
 
     const r = Math.floor(Math.random() * usernames.length);
