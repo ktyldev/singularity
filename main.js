@@ -95,45 +95,6 @@ class Post {
 }
 
 
-var userProfile = null;
-class UserProfile {
-    constructor(username) {
-        this.username = username;
-        this.bio = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
-
-        this.elem = document.getElementById("profile");
-        this.nameElem = document.getElementById("profile-name");
-        this.descElem = document.getElementById("profile-description");
-    }
-
-    show() {
-        this.nameElem.innerHTML = this.username;
-        this.descElem.innerHTML = this.bio;
-        this.elem.style.visibility = "visible";
-    }
-
-    hide() {
-        this.descElem.innerHTML = "";
-        this.nameElem.innerHTML = "";
-        this.elem.style.visibility = "hidden";
-    }
-}
-
-
-function updateUserProfile(username) {
-    if (userProfile != null) {
-        userProfile.hide();
-        userProfile = null;
-    }
-
-    if (!username)
-        return;
-
-    userProfile = new UserProfile(username);
-    userProfile.show();
-}
-
-
 function createPost() {
     const post = new Post();
     postContainer.appendChild(post.getElement());
