@@ -69,10 +69,26 @@ class Post {
 
         postElem.appendChild(profileLinkElem);
 
-        // TODO: add content to the post
         const contentElem = document.createElement("p");
         contentElem.innerHTML = this.content;
         postElem.appendChild(contentElem);
+
+        // add a random number of comments to the post
+        const numComments = Math.random() * 5;
+        for (let i = 0; i < numComments; i++) {
+            const commentElem = document.createElement("div");
+            commentElem.style.backgroundColor = getRandomColor();
+
+            const commentUserElem = document.createElement("h2");
+            commentUserElem.innerHTML = getUsername();
+            commentElem.appendChild(commentUserElem);
+
+            const commentContentElem = document.createElement("p");
+            commentContentElem.innerHTML = `comment ${i}`;
+            commentElem.appendChild(commentContentElem);
+
+            postElem.appendChild(commentElem);
+        }
 
         return postElem;
     }
