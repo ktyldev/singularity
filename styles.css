@@ -20,18 +20,18 @@
     background-color: red;
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 800px) {
     /* For bigger than phones */
     #profile {
         visibility: visible;
     }
 
     #post-container {
-        max-width: 600px;
+        max-width: 800px;
     }
 
     #loader {
-        max-width: 600px;
+        max-width: 800px;
     }
 }
 
