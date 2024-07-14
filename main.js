@@ -216,8 +216,9 @@ function loadDataFromEndpoint(endpoint, callback) {
         });
 }
 
-loadDataFromEndpoint("users.json", json => { users = json.users; });
-loadDataFromEndpoint("posts.json", json => { 
+const baseUrl = "https://api.wayfarer.games/singularity";
+loadDataFromEndpoint(`{baseUrl}/users.json`, json => { users = json.users; });
+loadDataFromEndpoint(`{baseUrl}/posts.json`, json => {
     // first pass to instantiate all the posts
     for (let i = 0; i < json.content.length; i++) {
         const post = new Post(json.content[i]);
