@@ -188,6 +188,23 @@ function removeInfiniteScroll() {
     window.removeEventListener("scroll", handleInfiniteScroll);
 }
 
+function addWritePostBlock() {
+    const blockElem = document.createElement("div");
+    blockElem.className = "block";
+    blockElem.style.backgroundColor = "red";
+
+    const buttonElem = document.createElement("a");
+    buttonElem.setAttribute("href", "#");
+    buttonElem.innerHTML = "Write something interesting for me!";
+    buttonElem.addEventListener("click", () => {
+        // TODO: inject a new post element at the top of the feed
+        console.log("write something interesting");
+    });
+    blockElem.append(buttonElem);
+
+    blockContainer.append(blockElem)
+}
+
 function init() {
     if (posts == undefined)
     {
@@ -196,10 +213,15 @@ function init() {
     }
     
     // need to load all the resources first
-    if (users.length == 0 || Object.keys(posts).length == 0)
+    const postCount = Object.keys(posts).length;
+    if (users.length == 0 || postCount == 0)
         return;
 
-    console.log(`loaded ${users.length} users and ${posts.length} posts`);
+    console.log(`loaded ${users.length} users and ${postCount} posts`);
+
+    // TODO: add write post block
+    addWritePostBlock();
+    // TODO: add bio
 
     addPosts(currentPage);
     window.addEventListener("scroll", handleInfiniteScroll);
