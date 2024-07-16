@@ -1,8 +1,7 @@
 var users = [];
 var posts = {};
 
-// first, let's get all the elements we'll need from our DOM
-const postContainer = document.getElementById("post-container");
+const blockContainer = document.getElementById("block-container");
 const postCountElem = document.getElementById("post-count");
 const postTotalElem = document.getElementById("post-total");
 const loader = document.getElementById("loader");
@@ -66,7 +65,7 @@ class Post {
 
     getElement() {
         const postElem = document.createElement("div");
-        postElem.className = "post";
+        postElem.className = "block";
         postElem.style.backgroundColor = getRandomColor();
 
         // add a header to the post
@@ -148,10 +147,9 @@ function addPosts(pageIdx) {
     postCountElem.innerHTML = endRange;
 
     const rootPosts = getRootPosts();
-    console.log(rootPosts);
 
     for (let i = startRange + 1; i <= endRange; i++) {
-        postContainer.appendChild(rootPosts[i].getElement());
+        blockContainer.appendChild(rootPosts[i].getElement());
     }
 }
 
