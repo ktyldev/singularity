@@ -65,7 +65,7 @@ class Post {
 
     getElement() {
         const postElem = document.createElement("div");
-        postElem.className = "block";
+        postElem.className = "block post";
         postElem.style.backgroundColor = getRandomColor();
 
         // add a header to the post
@@ -188,6 +188,61 @@ function removeInfiniteScroll() {
     window.removeEventListener("scroll", handleInfiniteScroll);
 }
 
+function writePost() {
+    // TODO: inject a new post element at the top of the feed
+    console.log("write something interesting");
+
+    setTimeout(() => {
+    }, 500);
+
+    const userName = "theChief";
+    fetch("https://api.wayfarer.games/singularity/generate-posts.php", {
+        method: "POST",
+        mode: "cors",
+        body: JSON.stringify({
+            "user": userName,
+            "interests": [
+                "gen-ai",
+                "blockchain",
+                "nfts"
+            ],
+            "posting_style": "just the most truly inane takes"
+        }),
+        headers: {
+            "Content-type": "application/json; charset=UTF-8"
+        }
+    })
+        .then(response => response.json())
+        .then(json => {
+            // find the first post
+            const children = blockContainer.childNodes;
+            let firstPost = null;
+            for (let i = 0; i < children.length; i++) {
+                const child = children[i];
+                const classes = child.className.split(" ");
+                if (classes.some(c => c == "post")) {
+                    firstPost = child;
+                    break;
+                }
+            }
+            console.log(firstPost);
+
+            // generate a post to insert before the first post
+            const postData = {
+                id: json.id,
+                associatedUser: json.associatedUser,
+                body: json.body
+            };
+
+            const post = new Post(postData);
+            const postElem = post.getElement();
+
+            blockContainer.insertBefore(postElem, firstPost);
+
+            console.log(post);
+        });
+}
+
 function addWritePostBlock() {
     const blockElem = document.createElement("div");
     blockElem.className = "block";
@@ -196,10 +251,7 @@ function addWritePostBlock() {
     const buttonElem = document.createElement("a");
     buttonElem.setAttribute("href", "#");
     buttonElem.innerHTML = "Write something interesting for me!";
-    buttonElem.addEventListener("click", () => {
-        // TODO: inject a new post element at the top of the feed
-        console.log("write something interesting");
-    });
+    buttonElem.addEventListener("click", writePost);
     blockElem.append(buttonElem);
 
     blockContainer.append(blockElem)
