@@ -6,19 +6,16 @@ const postCountElem = document.getElementById("post-count");
 const postTotalElem = document.getElementById("post-total");
 const loader = document.getElementById("loader");
 
-// we'll need a value for the max numaer of posts to be added to the page
-const postLimit = 99;
 // then we'll define a variable for how many posts we want to increase the
 // page by
 const postIncrease = 9;
-// how many times can we increase the content until we reach the max limit?
-const pageCount = Math.ceil(postLimit / postIncrease);
 // and define a value to determine which page we're on
 let currentPage = 1;
 
-
-postTotalElem.innerHTML = postLimit;
-
+// how many times can we increase the content until we reach the max limit?
+function getPageCount() {
+    return Math.ceil(Object.keys(posts).length / postIncrease);
+}
 
 function getRandomColor() {
     const h = Math.floor(Math.random() * 360);
@@ -140,8 +137,8 @@ function addPosts(pageIdx) {
     currentPage = pageIdx;
 
     const startRange = (pageIdx - 1) * postIncrease;
-    const endRange = currentPage == pageCount
-        ? postLimit
+    const endRange = currentPage == getPageCount()
+        ? posts.length
         : pageIdx * postIncrease;
 
     postCountElem.innerHTML = endRange;
@@ -162,7 +159,7 @@ function handleInfiniteScroll() {
             addPosts(currentPage + 1);
         }
 
-        if (currentPage === pageCount) {
+        if (currentPage === getPageCount()) {
             removeInfiniteScroll();
         }
     }, 1000);
@@ -305,4 +302,6 @@ loadDataFromEndpoint("https://api.wayfarer.games/singularity/posts.json", json =
         const parent = posts[post.replyTo];
         parent.addReply(post);
     }
+
+    postTotalElem.innerHTML = Object.keys(posts).length;
 });
