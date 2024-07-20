@@ -165,58 +165,56 @@ function removeInfiniteScroll() {
     window.removeEventListener("scroll", handleInfiniteScroll);
 }
 
+function getTopPost() {
+    // find the first post
+    const children = blockContainer.childNodes;
+    let firstPost = null;
+    for (let i = 0; i < children.length; i++) {
+        const child = children[i];
+        const classes = child.className.split(" ");
+        if (classes.some(c => c == "post")) {
+            firstPost = child;
+            break;
+        }
+    }
+
+    return firstPost;
+}
+
+function makePostFromJson(json) {
+    return new Post({
+        id: json.id,
+        associatedUser: json.associatedUser,
+        body: json.body
+    });
+}
+
+function getCurrentUser() {
+    return {
+        "user": "theChief",
+        "interests": [
+            "gen-ai",
+            "blockchain",
+            "nfts"
+        ],
+        "posting_style": "just the most truly inane takes"
+    };
+}
+
 function writePost() {
-    // TODO: inject a new post element at the top of the feed
-    console.log("write something interesting");
-
-    setTimeout(() => {
-    }, 500);
-
-    const userName = "theChief";
-    fetch("https://api.wayfarer.games/singularity/generate-posts.php", {
+    const request = {
         method: "POST",
         mode: "cors",
-        body: JSON.stringify({
-            "user": userName,
-            "interests": [
-                "gen-ai",
-                "blockchain",
-                "nfts"
-            ],
-            "posting_style": "just the most truly inane takes"
-        }),
+        body: JSON.stringify(getCurrentUser()),
         headers: {
             "Content-type": "application/json; charset=UTF-8"
         }
-    })
+    };
+
+    fetch("https://api.wayfarer.games/singularity/generate-posts.php", request)
         .then(response => response.json())
-        .then(json => {
-            // find the first post
-            const children = blockContainer.childNodes;
-            let firstPost = null;
-            for (let i = 0; i < children.length; i++) {
-                const child = children[i];
-                const classes = child.className.split(" ");
-                if (classes.some(c => c == "post")) {
-                    firstPost = child;
-                    break;
-                }
-            }
-
-            // generate a post to insert before the first post
-            const postData = {
-                id: json.id,
-                associatedUser: json.associatedUser,
-                body: json.body
-            };
-
-            const post = new Post(postData);
-            const postElem = post.getElement();
-
-            blockContainer.insertBefore(postElem, firstPost);
-
-            console.log(post);
-        });
+        .then(makePostFromJson)
+        .then(post => blockContainer.insertBefore(post.getElement(), getTopPost()));
 }
 
 function addWritePostBlock() {
