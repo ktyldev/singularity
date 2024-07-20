@@ -22,26 +22,6 @@ function getRandomColor() {
     return `hsl(${h}deg, 90%, 85%)`;
 }
 
-
-function getUsername() {
-    const r = Math.floor(Math.random() * users.length);
-    return users[r].username;
-}
-
-
-function getContent(username) {
-    let user = null;
-    for (let i = 0; i < users.length; i++) {
-        if (users[i].username == username) {
-            user = users[i];
-            break;
-        }
-    }
-
-    return "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
-}
-
-
 class Post {
     constructor(data) {
         this.id = data.id;
@@ -222,7 +202,6 @@ function writePost() {
                     break;
                 }
             }
-            console.log(firstPost);
 
             // generate a post to insert before the first post
             const postData = {
