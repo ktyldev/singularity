@@ -6,8 +6,7 @@ const postCountElem = document.getElementById("post-count");
 const postTotalElem = document.getElementById("post-total");
 const loader = document.getElementById("loader");
 
-// then we'll define a variable for how many posts we want to increase the
-// page by
+// define a variable for how many posts we want to increase the page by
 const postIncrease = 9;
 // and define a value to determine which page we're on
 let currentPage = 1;
@@ -23,13 +22,15 @@ function getRandomColor() {
 }
 
 class Post {
+    // JSON post data
     constructor(data) {
         this.id = data.id;
         this.username = data.associatedUser;
         this.content = data.body;
         this.replyTo = data.replyTo;
+        this.parentPost = null;
 
-        this.replies = []
+        this.replies = [];
     }
 
     getIsReply() {
@@ -38,64 +39,67 @@ class Post {
 
     addReply(reply) {
         this.replies.push(reply);
+        reply.parentPost = this;
+    }
+
+    getPostLevel() {
+        let p = this.parentPost;
+        let depth = 0;
+        while (p != null) {
+            p = p.parentPost;
+            depth++;
+        }
+        return depth;
+    }
+
+    getHeaderTag() {
+        const level = this.getPostLevel();
+        switch (level) {
+            case 0: return "h1";
+            case 1: return "h2";
+            case 2: return "h3";
+            case 3: return "h4";
+            default:
+                console.error(`${level} is not a supported post level`);
+                return null;
+        }
+    }
+
+    getHeaderElement() {
+        const headerElem = document.createElement(this.getHeaderTag());
+        headerElem.innerHTML = this.username;
+
+        const elem = document.createElement("a");
+        elem.setAttribute("href", "#");
+        elem.addEventListener("click", () => updateUserProfile(this.username));
+        elem.appendChild(headerElem);
+
+        return elem;
+    }
+
+    getContentElement() {
+        const elem = document.createElement("p");
+        elem.innerHTML = this.content;
+        return elem;
     }
 
     getElement() {
-        const postElem = document.createElement("div");
-        postElem.className = "block post";
-        postElem.style.backgroundColor = getRandomColor();
+        const elem = document.createElement("div");
 
-        // add a header to the post
-        const headerElem = document.createElement("h1");
-        headerElem.innerHTML = this.username;
-
-        const profileLinkElem = document.createElement("a");
-        profileLinkElem.setAttribute("href", "#");
-        profileLinkElem.addEventListener("click", () => updateUserProfile(this.username));
-        profileLinkElem.appendChild(headerElem);
-
-        postElem.appendChild(profileLinkElem);
-
-        const contentElem = document.createElement("p");
-        contentElem.innerHTML = this.content;
-        postElem.appendChild(contentElem);
+        // display root posts as blocks, and comments as attached to their posts
+        if (this.getPostLevel() == 0) {
+            elem.className = "block post";
+        }
+        elem.style.backgroundColor = getRandomColor();
+        elem.appendChild(this.getHeaderElement());
+        elem.appendChild(this.getContentElement());
 
         for (let i = 0; i < this.replies.length; i++) {
             const reply = this.replies[i];
-
-            const commentElem = document.createElement("div");
-            commentElem.style.backgroundColor = getRandomColor();
-
-            const commentUserElem = document.createElement("h2");
-            commentUserElem.innerHTML = reply.username;
-            commentElem.appendChild(commentUserElem);
-
-            const commentContentElem = document.createElement("p");
-            commentContentElem.innerHTML = reply.content;
-            commentElem.appendChild(commentContentElem);
-
-            postElem.appendChild(commentElem);
-
-            // TODO: indent 2nd-level replies
-            for (let j = 0; j < reply.replies.length; j++) {
-                const replyReply = reply.replies[j];
-
-                const replyReplyElem = document.createElement("div");
-                replyReplyElem.style.backgroundColor = getRandomColor();
-
-                const replyReplyUserElem = document.createElement("h3");
-                replyReplyUserElem.innerHTML = replyReply.username;
-                replyReplyElem.appendChild(replyReplyUserElem);
-
-                const replyReplyContentElem = document.createElement("p");
-                replyReplyContentElem.innerHTML = replyReply.content;
-                replyReplyElem.appendChild(replyReplyContentElem);
-
-                postElem.appendChild(replyReplyElem);
-            }
+            elem.appendChild(reply.getElement());
         }
 
-        return postElem;
+        return elem;
     }
 }
 
@@ -126,7 +130,9 @@ function addPosts(pageIdx) {
     const rootPosts = getRootPosts();
 
     for (let i = startRange + 1; i <= endRange; i++) {
-        blockContainer.appendChild(rootPosts[i].getElement());
+        const post = rootPosts[i];
+        const elem = post.getElement();
+        blockContainer.appendChild(elem);
     }
 }
 
@@ -245,9 +251,8 @@ function init() {
 
     console.log(`loaded ${users.length} users and ${postCount} posts`);
 
-    // TODO: add write post block
+    // TODO: add user bio above write post button
     addWritePostBlock();
-    // TODO: add bio
 
     addPosts(currentPage);
     window.addEventListener("scroll", handleInfiniteScroll);
