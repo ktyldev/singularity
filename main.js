@@ -67,13 +67,25 @@ class Post {
     }
 
     getHeaderElement() {
-        const headerElem = document.createElement(this.getHeaderTag());
-        headerElem.innerHTML = this.username;
-
         const elem = document.createElement("a");
+
+        // TODO: fetch current user pfp from thispersondoesnotexist and place in local storage
+        // for now if this person is us, post octopus
+        const currentUser = getCurrentUser();
+        const isCurrentUser = this.username == currentUser.user;
+        const pfpPath = isCurrentUser ? "oct.jpg" : `user/${this.username}.png`;
+
+        const pfpElem = document.createElement("img");
+        pfpElem.setAttribute("src", pfpPath);
+        pfpElem.setAttribute("class", "pfp");
+        elem.appendChild(pfpElem);
+
+        const usernameElem = document.createElement(this.getHeaderTag());
+        usernameElem.innerHTML = this.username;
+
         elem.setAttribute("href", "#");
         elem.addEventListener("click", () => updateUserProfile(this.username));
-        elem.appendChild(headerElem);
+        elem.appendChild(usernameElem);
 
         return elem;
     }
