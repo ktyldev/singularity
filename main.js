@@ -1,7 +1,7 @@
 var users = [];
 var posts = {};
 
-const localMode = true;
+const localMode = false;
 const blockContainer = document.getElementById("block-container");
 const postCountElem = document.getElementById("post-count");
 const postTotalElem = document.getElementById("post-total");
@@ -15,11 +15,6 @@ let currentPage = 1;
 // how many times can we increase the content until we reach the max limit?
 function getPageCount() {
     return Math.ceil(Object.keys(posts).length / postIncrease);
-}
-
-function getRandomColor() {
-    const h = Math.floor(Math.random() * 360);
-    return `hsl(${h}deg, 90%, 85%)`;
 }
 
 class Post {
@@ -54,16 +49,7 @@ class Post {
     }
 
     getHeaderTag() {
-        const level = this.getPostLevel();
-        switch (level) {
-            case 0: return "h1";
-            case 1: return "h2";
-            case 2: return "h3";
-            case 3: return "h4";
-            default:
-                console.error(`${level} is not a supported post level`);
-                return null;
-        }
+        return this.getPostLevel() == 0 ? "h1" : "h2";
     }
 
     getHeaderElement() {
@@ -81,7 +67,8 @@ class Post {
         elem.appendChild(pfpElem);
 
         const usernameElem = document.createElement(this.getHeaderTag());
-        usernameElem.innerHTML = this.username;
+        usernameElem.setAttribute("class", "username");
+        usernameElem.innerHTML = `<a href="#">${this.username}</a>`;
 
         elem.setAttribute("href", "#");
         elem.addEventListener("click", () => updateUserProfile(this.username));
@@ -100,10 +87,11 @@ class Post {
         const elem = document.createElement("div");
 
         // display root posts as blocks, and comments as attached to their posts
+        let classes = ["post"];
         if (this.getPostLevel() == 0) {
-            elem.className = "block post";
+            classes.push("block");
         }
-        elem.style.backgroundColor = getRandomColor();
+        elem.className = classes.join(" ");
         elem.appendChild(this.getHeaderElement());
         elem.appendChild(this.getContentElement());
 
@@ -247,16 +235,15 @@ function writePost() {
 
 function addWritePostBlock() {
     const blockElem = document.createElement("div");
-    blockElem.className = "block";
-    blockElem.style.backgroundColor = "red";
+    blockElem.addEventListener("click", writePost);
+    blockElem.className = "block write-post";
 
-    const buttonElem = document.createElement("a");
-    buttonElem.setAttribute("href", "#");
-    buttonElem.innerHTML = "Write something interesting for me!";
-    buttonElem.addEventListener("click", writePost);
-    blockElem.append(buttonElem);
+    const spanElem = document.createElement("h2");
+    spanElem.className = "";
+    spanElem.innerHTML = "Write something interesting for me!";
+    blockElem.append(spanElem);
 
-    blockContainer.append(blockElem)
+    blockContainer.append(blockElem);
 }
 
 function init() {
