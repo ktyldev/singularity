@@ -1,6 +1,7 @@
 var users = [];
 var posts = {};
 
+const localMode = true;
 const blockContainer = document.getElementById("block-container");
 const postCountElem = document.getElementById("post-count");
 const postTotalElem = document.getElementById("post-total");
@@ -217,10 +218,19 @@ function writePost() {
         }
     };
 
-    fetch("https://api.wayfarer.games/singularity/generate-posts.php", request)
-        .then(response => response.json())
-        .then(makePostFromJson)
-        .then(post => blockContainer.insertBefore(post.getElement(), getTopPost()));
+    if (localMode) {
+        const post = new Post({
+            id: "1234",
+            associatedUser: getCurrentUser().user,
+            body: "local mode post (local mode post)"
+        });
+        blockContainer.insertBefore(post.getElement(), getTopPost());
+    } else {
+        fetch("https://api.wayfarer.games/singularity/generate-posts.php", request)
+            .then(response => response.json())
+            .then(makePostFromJson)
+            .then(post => blockContainer.insertBefore(post.getElement(), getTopPost()));
+    }
 }
 
 function addWritePostBlock() {
@@ -267,8 +277,10 @@ function loadDataFromEndpoint(endpoint, callback) {
         });
 }
 
-loadDataFromEndpoint("https://api.wayfarer.games/singularity/users.json", json => { users = json.users; });
-loadDataFromEndpoint("https://api.wayfarer.games/singularity/posts.json", json => {
+const usersUrl = localMode ? "users.json" : "https://api.wayfarer.games/singularity/users.json";
+const postsUrl = localMode ? "posts.json" : "https://api.wayfarer.games/singularity/posts.json";
+loadDataFromEndpoint(usersUrl, json => { users = json.users; });
+loadDataFromEndpoint(postsUrl, json => {
     // first pass to instantiate all the posts
     for (let i = 0; i < json.content.length; i++) {
         const post = new Post(json.content[i]);
