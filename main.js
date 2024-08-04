@@ -258,49 +258,64 @@ function getCurrentUser() {
     };
 }
 
-function writePost(postCallback) {
-    const request = {
+function getPostRequest(body) {
+    return {
         method: "POST",
         mode: "cors",
-        body: JSON.stringify(getCurrentUser()),
+        body: JSON.stringify(body),
         headers: {
             "Content-type": "application/json; charset=UTF-8"
         }
     };
+}
 
+function writePost() {
     if (localMode) {
         const post = new Post({
             id: "1234",
             associatedUser: getCurrentUser().user,
             body: "local mode post (local mode post)"
         });
-        postCallback(post);
-    } else {
-        fetch("https://api.wayfarer.games/singularity/generate-posts.php", request)
-            .then(response => response.json())
-            .then(makePostFromJson)
-            .then(postCallback);
-    }
-}
+        blockContainer.insertBefore(post.getElement(), getTopPost());
+        return;
+    } 
 
-function writeNewPost() {
-    writePost(post => blockContainer.insertBefore(post.getElement(), getTopPost()));
+    fetch("https://api.wayfarer.games/singularity/generate-posts.php", getPostRequest(getCurrentUser()))
+        .then(response => response.json())
+        .then(makePostFromJson)
+        .then(post => blockContainer.insertBefore(post.getElement(), getTopPost()));
 }
 
 function writeReply(post) {
     // find the correct element
     const elem = document.getElementById(post.id);
+    const user = getCurrentUser();
 
-    writePost(reply => {
-        post.addReply(reply);
-        elem.append(reply.getElement());
-    });
+    if (localMode) {
+        console.error("TODO: implement local replies");
+        return;
+    }
+
+    const replyBody = {
+        postId: post.id,
+        interests: user.interests,
+        user: user.user,
+        posting_style: user.posting_style
+    };
+    const request = getPostRequest(replyBody);
+    fetch("https://api.wayfarer.games/singularity/generate-reply.php", getPostRequest(replyBody))
+        .then(response => response.json())
+        .then(makePostFromJson)
+        .then(reply => {
+            post.addReply(reply);
+            elem.append(reply.getElement());
+        });
 }
 
 
 function addWritePostBlock() {
     const blockElem = document.createElement("div");
-    blockElem.addEventListener("click", writeNewPost);
+    blockElem.addEventListener("click", writePost);
     blockElem.className = "block write-post";
 
     const spanElem = document.createElement("h2");
