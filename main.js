@@ -60,6 +60,8 @@ class Post {
         this.replyTo = data.replyTo;
         this.parentPost = null;
 
+        this.stars = 420;
+
         this.replies = [];
     }
 
@@ -113,6 +115,44 @@ class Post {
     getContentElement() {
         const elem = document.createElement("p");
         elem.innerHTML = this.content;
+
+
+        return elem;
+    }
+
+    getIconElement(svg, right) {
+        const elem = document.createElement("div");
+        elem.className = "icon";
+        right *= 94;
+        elem.style.right = `${right}px`;
+
+        const imgElem = document.createElement("img");
+        imgElem.className = "icon-img";
+        imgElem.setAttribute("src", svg);
+        elem.appendChild(imgElem);
+
+        const countElem = document.createElement("span");
+        // TODO: make an icon class to store count OR i guess just parse it out of the DOM
+        countElem.className = "icon-count";
+        countElem.innerHTML = "42069";
+        elem.appendChild(countElem);
+
+        return elem;
+    }
+
+    getFooterElement() {
+        const elem = document.createElement("div");
+        elem.className = "post-footer";
+
+        const starIconElem = this.getIconElement("icon/star-regular.svg", 0);
+        elem.appendChild(starIconElem);
+
+        const repostElem = this.getIconElement("icon/retweet-solid.svg", 1)
+        elem.appendChild(repostElem);
+
+        const bookmarkElem = this.getIconElement("icon/bookmark-regular.svg", 2);
+        elem.appendChild(bookmarkElem);
+
         return elem;
     }
 
@@ -138,6 +178,7 @@ class Post {
         elem.className = classes.join(" ");
         elem.appendChild(this.getHeaderElement());
         elem.appendChild(this.getContentElement());
+        elem.appendChild(this.getFooterElement());
         elem.appendChild(this.getReplyButton());
 
         for (let i = 0; i < this.replies.length; i++) {

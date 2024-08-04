@@ -2,6 +2,10 @@
     --header-height: 64px;
     --blue-gray: #374955;
     --sky-blue: #86b1cc;
+    /* use filter: instead of color: to color SVGs
+     * https://isotropic.co/tool/hex-color-to-css-filter/ */
+    --blue-gray-filter: invert(27%) sepia(20%) saturate(575%) hue-rotate(161deg) brightness(93%) contrast(93%);
+    --sky-blue-filter: invert(73%) sepia(16%) saturate(657%) hue-rotate(160deg) brightness(90%) contrast(91%);
     --comment-column-width: 3px;
 }
 
@@ -152,6 +156,40 @@ body {
     display: flex;
     align-items: center;
     justify-content: left;
+}
+
+.post-footer {
+    position: relative;
+}
+
+.icon {
+    color: var(--sky-blue);
+    height: 32px;
+    width: 100px;
+    position: absolute;
+    top: 16px;
+}
+
+.icon-img {
+    filter: var(--blue-gray-filter);
+    height: 32px;
+    width: 32px;
+    display: inline-block;
+}
+
+.icon-img.active {
+    filter: var(--sky-blue-filter)
+}
+
+.icon-count {
+    color: var(--blue-gray);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 32px;
+    margin-left: 4px;
 }
 
 .write-post {
