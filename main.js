@@ -8,7 +8,34 @@ const adjectives = [
     "analytical", "motivated", "solution-focused", "committed", "agile"
 ];
 
+const interests = [
+    "music", "comedy", "travel", "technology", "hiking", "nature", "food", "movies",
+    "culture", "art", "activism", "community", "books", "baking", "creativity", "fitness",
+    "fashion", "wellness", "history", "adventure", "gaming", "gardening", "sustainability",
+    "coding", "coffee", "DIY", "crafts", "pets", "animals", "humor", "languages", "sports",
+    "competition", "meditation", "mindfulness", "design", "concerts", "innovation", "museums",
+    "future", "writing", "relaxation", "photography", "compassion", "nutrition", "style",
+    "restaurants", "gadgets", "inspiration", "literature", "outdoors", "wildlife", "conservation",
+    "motivation", "beauty", "culinary arts", "festivals", "exploration", "knowledge", "camping",
+    "archeology", "triathlon", "endurance", "luxury", "wine", "fine dining", "audio equipment",
+    "sound quality", "startups", "entrepreneurship", "extreme sports", "philosophy", "survival",
+    "environment", "politics", "running", "gastronomy", "genres", "software", "current events",
+    "recipes", "listening", "discovery", "expression", "reading", "recommendations", "news",
+    "analysis", "trends", "dining", "reviews", "rescue", "welfare", "health", "artists", "cooking"
+];
+
+var localUser = {
+    user: null,
+    interests: [],
+    postingStyle: null
+};
+var splashStep = 0;
+const maxInterests = 3;
+
+// configuration
 const localMode = false;
+const showSplash = false;
+
 const blockContainer = document.getElementById("block-container");
 const postCountElem = document.getElementById("post-count");
 const postTotalElem = document.getElementById("post-total");
@@ -215,13 +242,18 @@ function makePostFromJson(json) {
 }
 
 function getCurrentUser() {
+    // return some default values if we didn't do the initial configuration 
+    if (!showSplash) {
+        return {
+            "user": "ktyl",
+            "interests": ["trains", "trains", "trains"],
+            "posting_style": "borderline maniacal train content"
+        };
+    }
+
     return {
-        "user": "theChief",
-        "interests": [
-            "gen-ai",
-            "blockchain",
-            "nfts"
-        ],
+        "user": localUser.user,
+        "interests": localUser.interests,
         "posting_style": "just the most truly inane takes"
     };
 }
@@ -243,12 +275,10 @@ function writePost(postCallback) {
             body: "local mode post (local mode post)"
         });
         postCallback(post);
-        //blockContainer.insertBefore(post.getElement(), getTopPost());
     } else {
         fetch("https://api.wayfarer.games/singularity/generate-posts.php", request)
             .then(response => response.json())
             .then(makePostFromJson)
-            //.then(post => blockContainer.insertBefore(post.getElement(), getTopPost()));
             .then(postCallback);
     }
 }
@@ -302,6 +332,162 @@ function init() {
     window.addEventListener("scroll", handleInfiniteScroll);
 }
 
+
+function chooseInterest(interest) {
+    if (localUser.interests.length == maxInterests) {
+        console.error(`can't choose more than ${maxInterests} interests`);
+        return;
+    }
+
+    localUser.interests.push(interest);
+
+    const interestsTextElem = document.getElementById("interests-text");
+
+    if (localUser.interests.length != maxInterests) {
+        interestsTextElem.innerHTML = getInterestsTextValue(localUser.interests.length);
+        return;
+    }
+
+    const advanceButtonElem = document.getElementById("advance-button");
+    advanceButtonElem.innerHTML = "Begin!";
+    advanceButtonElem.style.visibility = "visible";
+
+    interestsTextElem.remove();
+    const interestsListElem = document.getElementById("interest-selection");
+    interestsListElem.remove();
+}
+
+function getInterestsSubset() {
+    const count = 20;
+    let subset = [];
+
+    while (subset.length < count) {
+        const interest = interests[Math.floor(Math.random() * interests.length)];
+
+        // skip if it's already included
+        if (subset.includes(interest))
+            continue;
+
+        // skip if the user has already chosen it
+        if (localUser.interests.includes(interest))
+            continue;
+
+        subset.push(interest);
+    }
+
+    return subset;
+}
+
+function populateSplashInterests() {
+
+    const rootElem = document.getElementById("interest-selection");
+    if (rootElem == null)
+        return;
+
+    // clear existing interests
+    rootElem.innerHTML = "";
+
+    const interestsSubset = getInterestsSubset();
+
+    for (let i = 0; i < interestsSubset.length; i++) {
+        const interest = interestsSubset[i];
+        const listItemElem = document.createElement("li");
+        rootElem.appendChild(listItemElem);
+
+        const buttonElem = document.createElement("a");
+        buttonElem.innerHTML = `#${interest}`;
+        buttonElem.addEventListener("click", () => {
+            chooseInterest(interest);
+            populateSplashInterests();
+        });
+        listItemElem.appendChild(buttonElem);
+    }
+}
+
+function getInterestsTextValue(numChosenInterests) {
+    return `Choose some interests! (${numChosenInterests}/${maxInterests})`;
+}
+
+function usernameInputUpdated(event) {
+    const inputElem = document.getElementById("username");
+    const buttonElem = document.getElementById("advance-button");
+    const isNameEmpty = inputElem.value.length == "";
+    buttonElem.style.visibility = isNameEmpty ? "hidden" : "visible";
+
+    if (isNameEmpty)
+        return;
+
+    if (event.key == "Enter") {
+        advanceSplash();
+    }
+}
+
+function chooseName() {
+    // check that a name has been chosen
+    const inputElem = document.getElementById("username");
+    if (!inputElem.value) {
+        console.error("a name needs to be entered!");
+        return;
+    }
+
+    splashStep = 1;
+    localUser.user = inputElem.value;
+
+    // TODO: disable button until name has been chosen
+
+    // TODO: insert interest selection elements before name input
+    //writePost(post => blockContainer.insertBefore(post.getElement(), getTopPost()));
+    const splashElem = document.getElementById("start-splash");
+
+    const interestsTextElem = document.createElement("p");
+    interestsTextElem.innerHTML = getInterestsTextValue(0);
+    interestsTextElem.id = "interests-text";
+    interestsTextElem.className = "center";
+    splashElem.insertBefore(interestsTextElem, inputElem);
+
+    const interestsListElem = document.createElement("ul");
+    interestsListElem.className = "center";
+    interestsListElem.id = "interest-selection";
+    splashElem.insertBefore(interestsListElem, inputElem);
+
+    populateSplashInterests();
+
+    // remove name input
+    inputElem.remove();
+
+    const advanceButtonElem = document.getElementById("advance-button");
+    advanceButtonElem.style.visibility = "hidden";
+
+    splashStep = 1;
+}
+
+function chooseInterests() {
+    if (localUser.interests.length < maxInterests) {
+        console.error(`need to choose ${maxInterests} interests`);
+        return;
+    }
+
+    console.log("TODO: generate user posting style");
+}
+
+function removeSplash() {
+    document.getElementById("start-splash").remove();
+}
+
+function advanceSplash() {
+    switch(splashStep) {
+        case 0:
+            chooseName();
+            break;
+        case 1:
+            chooseInterests();
+            removeSplash();
+            break;
+        default:
+            console.error(`nothing defined for splash step ${splashStep}`);
+    }
+}
+
 function loadDataFromEndpoint(endpoint, callback) {
     fetch(endpoint)
         .then(response => response.json())
@@ -310,6 +496,7 @@ function loadDataFromEndpoint(endpoint, callback) {
             init();
         });
 }
+
 
 const usersUrl = localMode ? "users.json" : "https://api.wayfarer.games/singularity/users.json";
 const postsUrl = localMode ? "posts.json" : "https://api.wayfarer.games/singularity/posts.json";
@@ -333,3 +520,7 @@ loadDataFromEndpoint(postsUrl, json => {
 
     postTotalElem.innerHTML = Object.keys(posts).length;
 });
+
+if (!showSplash) {
+    removeSplash();
+}

@@ -1,15 +1,17 @@
 :root {
     --header-height: 64px;
-    --background-color: #374955;
-    --accent-color: #86b1cc;
+    --blue-gray: #374955;
+    --sky-blue: #86b1cc;
     --comment-column-width: 3px;
 }
 
 body {
+    margin: 0;
+    padding: 0;
     font-family: "Poppins", sans-serif;
     font-weight: 400;
     font-style: normal;
-    background-color: var(--background-color);
+    background-color: var(--sky-blue);
 }
 
 @media only screen and (min-width: 800px) {
@@ -23,6 +25,77 @@ body {
     }
 }
 
+#start-splash {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    background-color: white;
+    z-index: 1;
+}
+
+.center {
+    display: block;
+    margin: auto;
+    padding: auto;
+    text-align: center;
+}
+
+#start-splash img {
+    max-width: 40vw;
+    margin-top: 10vh;
+}
+
+#start-splash input {
+    margin: 2em auto;
+    border: none;
+    background-color: var(--sky-blue);
+    color: white;
+    border-radius: 16px;
+    font-size: 1.5em;
+    padding: 4px 8px;
+}
+
+#advance-button {
+    width: 20%;
+    margin: 2em auto;
+    color: white;
+    background-color: var(--sky-blue);
+    text-align: center;
+    visibility: hidden;
+    padding: 4px 8px;
+    border-radius: 16px;
+}
+
+#interests-text {
+    color: var(--blue-gray);
+}
+
+#interest-selection {
+    width: 80%;
+    padding: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+#interest-selection li {
+    display: inline;
+    margin: .5em;
+}
+
+#interest-selection li a {
+    padding: 4px 8px;
+    border-radius: 16px;
+    color: white;
+    background-color: var(--sky-blue);
+    transition: all 200ms ease-in-out;
+}
+
+#interest-selection li a:hover {
+    background-color: var(--blue-gray);
+}
 
 #block-container {
     display: flex;
@@ -51,19 +124,20 @@ body {
     border-radius: calc(var(--header-height) / 2);
     margin-top: calc(var(--header-height) / 8);
     padding: calc(var(--header-height) / 8) calc(var(--header-height) / 4);
-    background-color: var(--accent-color);
-    color: var(--backround-color);
+    background-color: var(--sky-blue);
+    color: white;
     cursor: pointer;
     transition: all 200ms ease-in-out;
 }
 
 .reply-button:hover {
-    background-color: var(--background-color);
+    background-color: var(--blue-gray);
     color: white;
 }
 
 .reply-button:active {
     background-color: white;
+    color: var(--blue-gray);
 }
 
 .post-header {
@@ -82,16 +156,16 @@ body {
 
 .write-post {
     cursor: pointer;
-    color: var(--background-color);
+    color: var(--blue-gray);
 }
 
 .write-post:hover {
-    background-color: var(--accent-color);
+    background-color: var(--sky-blue);
     color: white;
 }
 
 .write-post:active {
-    background-color: var(---background-color);
+    background-color: var(---blue-gray);
 }
 
 .write-post h2 {
@@ -102,7 +176,7 @@ body {
 
 a {
     text-decoration: none;
-    color: var(--background-color);
+    color: var(--blue-gray);
 }
 
 .pfp {
@@ -118,7 +192,7 @@ a {
 
 .post:not(.block) {
     margin-top: calc(var(--header-height) / 4);
-    border-left: var(--comment-column-width) solid var(--accent-color);
+    border-left: var(--comment-column-width) solid var(--sky-blue);
     padding-left: calc(var(--header-height) / 2 - var(--comment-column-width));
 }
 
