@@ -1,6 +1,13 @@
 var users = [];
 var posts = {};
 
+const adjectives = [
+    "dynamic", "strategic", "innovative", "passionate", "results-oriented",
+    "proactive", "visionary", "collaborative", "driven", "empathetic",
+    "adaptable", "resilient", "resourceful", "detail-oriented", "inspirational",
+    "analytical", "motivated", "solution-focused", "committed", "agile"
+];
+
 const localMode = false;
 const blockContainer = document.getElementById("block-container");
 const postCountElem = document.getElementById("post-count");
@@ -53,7 +60,9 @@ class Post {
     }
 
     getHeaderElement() {
-        const elem = document.createElement("a");
+        const elem = document.createElement("div");
+        elem.className = "post-header";
+        elem.addEventListener("click", () => updateUserProfile(this.username));
 
         // TODO: fetch current user pfp from thispersondoesnotexist and place in local storage
         // for now if this person is us, post octopus
@@ -69,9 +78,6 @@ class Post {
         const usernameElem = document.createElement(this.getHeaderTag());
         usernameElem.setAttribute("class", "username");
         usernameElem.innerHTML = `<a href="#">${this.username}</a>`;
-
-        elem.setAttribute("href", "#");
-        elem.addEventListener("click", () => updateUserProfile(this.username));
         elem.appendChild(usernameElem);
 
         return elem;
@@ -83,8 +89,19 @@ class Post {
         return elem;
     }
 
+    getReplyButton() {
+        const elem = document.createElement("a");
+        const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+        const particle = "aeiou".includes(adjective[0]) ? "an" : "a";
+        elem.innerHTML = `Write ${particle} ${adjective} reply for me!`;
+        elem.className = "reply-button";
+        elem.addEventListener("click", () => writeReply(this));
+        return elem;
+    }
+
     getElement() {
         const elem = document.createElement("div");
+        elem.id = this.id;
 
         // display root posts as blocks, and comments as attached to their posts
         let classes = ["post"];
@@ -94,6 +111,7 @@ class Post {
         elem.className = classes.join(" ");
         elem.appendChild(this.getHeaderElement());
         elem.appendChild(this.getContentElement());
+        elem.appendChild(this.getReplyButton());
 
         for (let i = 0; i < this.replies.length; i++) {
             const reply = this.replies[i];
@@ -208,7 +226,7 @@ function getCurrentUser() {
     };
 }
 
-function writePost() {
+function writePost(postCallback) {
     const request = {
         method: "POST",
         mode: "cors",
@@ -224,18 +242,35 @@ function writePost() {
             associatedUser: getCurrentUser().user,
             body: "local mode post (local mode post)"
         });
-        blockContainer.insertBefore(post.getElement(), getTopPost());
+        postCallback(post);
+        //blockContainer.insertBefore(post.getElement(), getTopPost());
     } else {
         fetch("https://api.wayfarer.games/singularity/generate-posts.php", request)
             .then(response => response.json())
             .then(makePostFromJson)
-            .then(post => blockContainer.insertBefore(post.getElement(), getTopPost()));
+            //.then(post => blockContainer.insertBefore(post.getElement(), getTopPost()));
+            .then(postCallback);
     }
 }
 
+function writeNewPost() {
+    writePost(post => blockContainer.insertBefore(post.getElement(), getTopPost()));
+}
+
+function writeReply(post) {
+    // find the correct element
+    const elem = document.getElementById(post.id);
+
+    writePost(reply => {
+        post.addReply(reply);
+        elem.append(reply.getElement());
+    });
+}
+
+
 function addWritePostBlock() {
     const blockElem = document.createElement("div");
-    blockElem.addEventListener("click", writePost);
+    blockElem.addEventListener("click", writeNewPost);
     blockElem.className = "block write-post";
 
     const spanElem = document.createElement("h2");

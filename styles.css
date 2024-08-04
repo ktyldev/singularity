@@ -46,7 +46,31 @@ body {
     padding-bottom: var(--header-height);
 }
 
-.block a .username {
+.reply-button {
+    display: inline-block;
+    border-radius: calc(var(--header-height) / 2);
+    margin-top: calc(var(--header-height) / 8);
+    padding: calc(var(--header-height) / 8) calc(var(--header-height) / 4);
+    background-color: var(--accent-color);
+    color: var(--backround-color);
+    cursor: pointer;
+    transition: all 200ms ease-in-out;
+}
+
+.reply-button:hover {
+    background-color: var(--background-color);
+    color: white;
+}
+
+.reply-button:active {
+    background-color: white;
+}
+
+.post-header {
+    position: relative;
+}
+
+.post-header .username {
     margin-top: 0;
     margin-bottom: 0;
     padding-left: calc(var(--header-height) / 4);
@@ -97,7 +121,6 @@ a {
     border-left: var(--comment-column-width) solid var(--accent-color);
     padding-left: calc(var(--header-height) / 2 - var(--comment-column-width));
 }
-
 
 .post-actions {
     margin: 8px;
