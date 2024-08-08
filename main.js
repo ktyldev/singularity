@@ -582,14 +582,28 @@ function loadDataFromEndpoint(endpoint, callback) {
         });
 }
 
+function shuffle(array) {
+    let idx = array.length;
+
+    while (idx != 0) {
+        const r = Math.floor(Math.random() * idx);
+        idx--;
+
+        [array[idx], array[r]] = [array[r], array[idx]];
+    }
+}
 
 const usersUrl = localMode ? "users.json" : "https://api.wayfarer.games/singularity/users.json";
 const postsUrl = localMode ? "posts.json" : "https://api.wayfarer.games/singularity/posts.json";
 loadDataFromEndpoint(usersUrl, json => { users = json.users; });
 loadDataFromEndpoint(postsUrl, json => {
+
+    let postsData = json.content;
+    shuffle(postsData);
+
     // first pass to instantiate all the posts
-    for (let i = 0; i < json.content.length; i++) {
-        const post = new Post(json.content[i]);
+    for (let i = 0; i < postsData.length; i++) {
+        const post = new Post(postsData[i]);
         posts[post.id] = post;
     }
 
