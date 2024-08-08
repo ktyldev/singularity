@@ -24,6 +24,20 @@ const interests = [
     "analysis", "trends", "dining", "reviews", "rescue", "welfare", "health", "artists", "cooking"
 ];
 
+const postingStyles = [
+    "Sometimes gets over excited and replies in ALL CAPS",
+    "Posts jokes exclusively. Always posts jokes. Replies are usually quite funny and witty. Does not ever ask questions",
+    "Posts exactly what is on their mind at any given time, usually not related to anything. Replies are a little bit more focused, but still not entirely on topic",
+    "Aggressively tries to relate everything to an unrelated hobby",
+    "Types in a rush so ends up making lots of spelling mistakes. At least two spelling mistakes in every reply.",
+    "Constantly brings up a major life achievement, every reply mentions this milestone.",
+    "Incredibly sarcastic in every single reply. Always sarcastic. Reply must be sarcastic.",
+    "Is a little bit horny all the time. Posts are ever so slightly sexually suggestive. Always flirts given the opportunity",
+    "Always PUMPED UP, replies use lots of CAPITAL LETTERS and communicate how excited the user is. Lots of capital letters.",
+    "Quick to anger, likes to antagonise. Very negative. Replies from this user do not ever say anything positive. Ever.",
+    "Always plays devil's advocate. Replies from this user always go against what the original post said."
+];
+
 var localUser = {
     user: null,
     interests: [],
@@ -34,7 +48,7 @@ const maxInterests = 3;
 
 // configuration
 const localMode = false;
-const showSplash = false;
+const showSplash = true;
 
 const blockContainer = document.getElementById("block-container");
 const postCountElem = document.getElementById("post-count");
@@ -566,6 +580,7 @@ function advanceSplash() {
             break;
         case 1:
             chooseInterests();
+            localUser.postingStyle = postingStyles[Math.floor(Math.random() * postingStyles.length)];
             removeSplash();
             break;
         default:
