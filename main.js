@@ -122,8 +122,8 @@ class Post {
     getIconElement(svg, right) {
         const elem = document.createElement("div");
         elem.className = "icon";
-        right *= 94;
-        elem.style.right = `${right}px`;
+        right *= 15;
+        elem.style.right = `${right}vw`;
 
         const imgElem = document.createElement("img");
         imgElem.className = "icon-img";
@@ -152,16 +152,10 @@ class Post {
         const bookmarkElem = this.getIconElement("icon/bookmark-regular.svg", 2);
         elem.appendChild(bookmarkElem);
 
-        return elem;
-    }
+        const commentElem = this.getIconElement("icon/comment-regular.svg", 3);
+        commentElem.addEventListener("click", () => writeReply(this));
+        elem.appendChild(commentElem);
 
-    getReplyButton() {
-        const elem = document.createElement("a");
-        const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
-        const particle = "aeiou".includes(adjective[0]) ? "an" : "a";
-        elem.innerHTML = `Write ${particle} ${adjective} reply for me!`;
-        elem.className = "reply-button";
-        elem.addEventListener("click", () => writeReply(this));
         return elem;
     }
 
@@ -178,7 +172,6 @@ class Post {
         elem.appendChild(this.getHeaderElement());
         elem.appendChild(this.getContentElement());
         elem.appendChild(this.getFooterElement());
-        elem.appendChild(this.getReplyButton());
 
         for (let i = 0; i < this.replies.length; i++) {
             const reply = this.replies[i];
