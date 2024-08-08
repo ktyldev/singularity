@@ -91,7 +91,6 @@ class Post {
     getHeaderElement() {
         const elem = document.createElement("div");
         elem.className = "post-header";
-        elem.addEventListener("click", () => updateUserProfile(this.username));
 
         // TODO: fetch current user pfp from thispersondoesnotexist and place in local storage
         // for now if this person is us, post octopus
