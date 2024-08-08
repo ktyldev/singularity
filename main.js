@@ -183,6 +183,11 @@ class Post {
 }
 
 
+function getAdjective() {
+    return adjectives[Math.floor(Math.random() * adjectives.length)];
+}
+
+
 function getRootPosts() {
     let result = [];
     for (var id in posts) {
@@ -302,7 +307,23 @@ function getPostRequest(body) {
     };
 }
 
+function getLoaderIcon() {
+    const elem = document.createElement("div");
+    elem.className = "loader-icon";
+    return elem;
+}
+
+function getWritePostButtonText() {
+    return `Write something ${getAdjective()} for me!`;
+}
+
+var isWritingPost = false;
+var isWritingReply = false;
+
 function writePost() {
+    if (isWritingPost)
+        return;
+
     if (localMode) {
         const post = new Post({
             id: "1234",
@@ -313,13 +334,26 @@ function writePost() {
         return;
     } 
 
+    // change the content of the write post button to a loading animation
+    const buttonContent = document.getElementById("write-post-button-content");
+    buttonContent.innerHTML = "";
+    buttonContent.appendChild(getLoaderIcon());
+    isWritingPost = true;
+
     fetch("https://api.wayfarer.games/singularity/generate-posts.php", getPostRequest(getCurrentUser()))
         .then(response => response.json())
         .then(makePostFromJson)
-        .then(post => blockContainer.insertBefore(post.getElement(), getTopPost()));
+        .then(post => {
+            isWritingPost = false;
+            blockContainer.insertBefore(post.getElement(), getTopPost());
+            buttonContent.innerHTML = getWritePostButtonText();
+        });
 }
 
 function writeReply(post) {
+    if (isWritingReply)
+        return;
+
     // find the correct element
     const elem = document.getElementById(post.id);
     const user = getCurrentUser();
@@ -335,26 +369,33 @@ function writeReply(post) {
         user: user.user,
         posting_style: user.posting_style
     };
+    isWritingReply = true;
     const request = getPostRequest(replyBody);
+
+    // add a loading icon to the element
+    const loader = getLoaderIcon();
+    elem.append(loader);
+
     fetch("https://api.wayfarer.games/singularity/generate-reply.php", getPostRequest(replyBody))
         .then(response => response.json())
         .then(makePostFromJson)
         .then(reply => {
+            isWritingReply = false;
             post.addReply(reply);
             elem.append(reply.getElement());
+            loader.remove();
         });
 }
-
-
 function addWritePostBlock() {
     const blockElem = document.createElement("div");
     blockElem.addEventListener("click", writePost);
     blockElem.className = "block write-post";
 
-    const spanElem = document.createElement("h2");
-    spanElem.className = "";
-    spanElem.innerHTML = "Write something interesting for me!";
-    blockElem.append(spanElem);
+    const contentElem = document.createElement("h1");
+    contentElem.className = "";
+    contentElem.id = "write-post-button-content";
+    contentElem.innerHTML = getWritePostButtonText();
+    blockElem.append(contentElem);
 
     blockContainer.append(blockElem);
 }
@@ -481,10 +522,6 @@ function chooseName() {
     splashStep = 1;
     localUser.user = inputElem.value;
 
-    // TODO: disable button until name has been chosen
-
-    // TODO: insert interest selection elements before name input
-    //writePost(post => blockContainer.insertBefore(post.getElement(), getTopPost()));
     const splashElem = document.getElementById("start-splash");
 
     const interestsTextElem = document.createElement("p");

@@ -120,7 +120,7 @@ body {
 }
 
 .block:not(.write-post) {
-    padding-bottom: var(--header-height);
+    padding-bottom: calc(3 * var(--header-height) / 2);
 }
 
 .reply-button {
@@ -206,7 +206,7 @@ body {
     background-color: var(---blue-gray);
 }
 
-.write-post h2 {
+.write-post h1 {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -229,7 +229,7 @@ a {
 }
 
 .post:not(.block) {
-    margin-top: calc(var(--header-height) / 4);
+    margin-top: calc(var(--header-height));
     border-left: var(--comment-column-width) solid var(--sky-blue);
     padding-left: calc(var(--header-height) / 2 - var(--comment-column-width));
 }
@@ -246,6 +246,26 @@ a {
     display: flex;
     justify-content: center;
     margin-inline: auto;
+}
+
+.loader-icon {
+    width: 50px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    padding: 3px;
+    background:
+        radial-gradient(farthest-side,var(--blue-gray) 95%,#0000) 50% 0/12px 12px no-repeat,
+        radial-gradient(farthest-side,#0000 calc(100% - 5px),var(--blue-gray) calc(100% - 4px)) content-box;
+    animation: l6 2s infinite ;
+}
+@keyframes l6 {to{transform: rotate(1turn)}}
+
+.post .loader-icon {
+    background:
+        radial-gradient(farthest-side,var(--blue-gray) 95%,#0000) 50% 0/12px 12px no-repeat,
+        radial-gradient(farthest-side,#0000 calc(100% - 5px),var(--blue-gray) calc(100% - 4px)) content-box;
+    margin: auto;
+    margin-top: calc(3 * var(--header-height) / 2);
 }
 
 .skeleton-post {
