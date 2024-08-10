@@ -48,7 +48,7 @@ const maxInterests = 3;
 
 // configuration
 const localMode = false;
-const showSplash = true;
+const showSplash = false;
 
 const blockContainer = document.getElementById("block-container");
 const loader = document.getElementById("loader");
@@ -67,6 +67,77 @@ function getPageCount() {
     return Math.ceil(Object.keys(posts).length / postIncrease);
 }
 
+class Icon {
+    constructor(id, imagePath, callback) {
+        this.id = id;
+        this.imagePath = imagePath;
+        this.callback = callback;
+
+        this.isActive = false;
+    }
+
+    setActive(newValue) {
+        this.isActive = newValue;
+
+        const elem = document.getElementById(this.id);
+        if (this.isActive) {
+            elem.className = "icon active";
+        } else {
+            elem.className = "icon";
+        }
+    }
+
+    setImage(path) {
+        const imgElem = document.getElementById(this.id)
+            .getElementsByClassName("icon-img")[0];
+        imgElem.setAttribute("src", path);
+    }
+
+    getElement() {
+        const elem = document.createElement("div");
+        elem.id = this.id;
+        elem.className = "icon";
+
+        const imgElem = document.createElement("img");
+        imgElem.className = "icon-img";
+        imgElem.setAttribute("src", this.imagePath);
+        elem.appendChild(imgElem);
+
+        const countElem = document.createElement("span");
+        countElem.className = "icon-count";
+        const count = Math.floor(1000 + Math.random() * 9000);
+        countElem.innerHTML = count;
+        elem.appendChild(countElem);
+
+        elem.addEventListener("click", () => {
+            this.callback(this);
+        });
+
+        return elem;
+    }
+
+    incrementCount() {
+        this.modifyCount(1);
+    }
+    decrementCount() {
+        this.modifyCount(-1);
+    }
+
+    modifyCount(amount) {
+        // get count element
+        const countElem = document.getElementById(this.id)
+            .getElementsByClassName("icon-count")[0];
+
+        // read the number out of it
+        let number = parseInt(countElem.innerHTML);
+
+        number += amount;
+
+        // put the number back
+        countElem.innerHTML = number;
+    }
+}
+
 class Post {
     // JSON post data
     constructor(data) {
@@ -75,8 +146,6 @@ class Post {
         this.content = data.body;
         this.replyTo = data.replyTo;
         this.parentPost = null;
-
-        this.stars = 420;
 
         this.replies = [];
     }
@@ -112,7 +181,7 @@ class Post {
         // for now if this person is us, post octopus
         const currentUser = getCurrentUser();
         const isCurrentUser = this.username == currentUser.user;
-        const pfpPath = isCurrentUser ? "oct.jpg" : `user/${this.username}.png`;
+        const pfpPath = isCurrentUser ? "https://thispersondoesnotexist.com/" : `user/${this.username}.png`;
 
         const pfpElem = document.createElement("img");
         pfpElem.setAttribute("src", pfpPath);
@@ -138,8 +207,6 @@ class Post {
     getIconElement(svg, right) {
         const elem = document.createElement("div");
         elem.className = "icon";
-        right *= 15;
-        elem.style.right = `${right}vw`;
 
         const imgElem = document.createElement("img");
         imgElem.className = "icon-img";
@@ -147,9 +214,8 @@ class Post {
         elem.appendChild(imgElem);
 
         const countElem = document.createElement("span");
-        // TODO: make an icon class to store count OR i guess just parse it out of the DOM
         countElem.className = "icon-count";
-        countElem.innerHTML = "42069";
+        countElem.innerHTML = count;
         elem.appendChild(countElem);
 
         return elem;
@@ -159,18 +225,47 @@ class Post {
         const elem = document.createElement("div");
         elem.className = "post-footer";
 
-        const starIconElem = this.getIconElement("icon/star-regular.svg", 0);
-        elem.appendChild(starIconElem);
+        const getToggleCallback = (activeImg, inactiveImg) => {
+            const toggle = icon => {
+                if (icon.isActive) {
+                    icon.setActive(false);
+                    icon.setImage(inactiveImg);
+                    icon.decrementCount();
+                } else {
+                    icon.setActive(true);
+                    icon.setImage(activeImg);
+                    icon.incrementCount();
+                }
+            };
+            return toggle;
+        }
 
-        const repostElem = this.getIconElement("icon/retweet-solid.svg", 1)
-        elem.appendChild(repostElem);
+        const star = new Icon(
+            `${this.id}-star`,
+            "icon/star-regular.svg",
+            getToggleCallback("icon/star-solid.svg", "icon/star-regular.svg"));
+        const repost = new Icon(
+            `${this.id}-repost`,
+            "icon/retweet-solid.svg",
+            icon => icon.incrementCount());
+        const bookmark = new Icon(
+            `${this.id}-bookmark`,
+            "icon/bookmark-regular.svg",
+            getToggleCallback("icon/bookmark-solid.svg", "icon/bookmark-regular.svg"));
+        const comment = new Icon(
+            `${this.id}-comment`,
+            "icon/comment-regular.svg",
+            icon => {
+                writeReply(this);
+                icon.incrementCount();
+            });
 
-        const bookmarkElem = this.getIconElement("icon/bookmark-regular.svg", 2);
-        elem.appendChild(bookmarkElem);
-
-        const commentElem = this.getIconElement("icon/comment-regular.svg", 3);
-        commentElem.addEventListener("click", () => writeReply(this));
-        elem.appendChild(commentElem);
+        if (this.username != getCurrentUser().user) {
+            elem.appendChild(comment.getElement());
+        }
+        elem.appendChild(star.getElement());
+        elem.appendChild(repost.getElement());
+        elem.appendChild(bookmark.getElement());
 
         return elem;
     }
@@ -306,7 +401,7 @@ function getCurrentUser() {
     return {
         "user": localUser.user,
         "interests": localUser.interests,
-        "posting_style": "just the most truly inane takes"
+        "posting_style": localUser.postingStyle
     };
 }
 
@@ -328,7 +423,7 @@ function getLoaderIcon() {
 }
 
 function getWritePostButtonText() {
-    return `Write something ${getAdjective()} for me!`;
+    return `write something ${getAdjective()}.`;
 }
 
 function writePost() {
@@ -425,7 +520,6 @@ function init() {
 
     console.log(`loaded ${users.length} users and ${postCount} posts`);
 
-    // TODO: add user bio above write post button
     addWritePostBlock();
 
     addPosts(currentPage);
