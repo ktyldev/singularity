@@ -55,6 +55,10 @@ const postCountElem = document.getElementById("post-count");
 const postTotalElem = document.getElementById("post-total");
 const loader = document.getElementById("loader");
 
+// some state
+var isWritingPost = false;
+var isWritingReply = false;
+
 // define a variable for how many posts we want to increase the page by
 const postIncrease = 9;
 // and define a value to determine which page we're on
@@ -331,9 +335,6 @@ function getWritePostButtonText() {
     return `Write something ${getAdjective()} for me!`;
 }
 
-var isWritingPost = false;
-var isWritingReply = false;
-
 function writePost() {
     if (isWritingPost)
         return;
@@ -452,7 +453,7 @@ function chooseInterest(interest) {
     }
 
     const advanceButtonElem = document.getElementById("advance-button");
-    advanceButtonElem.innerHTML = "Begin!";
+    advanceButtonElem.innerHTML = "enter.";
     advanceButtonElem.style.visibility = "visible";
 
     interestsTextElem.remove();
@@ -508,7 +509,11 @@ function populateSplashInterests() {
 }
 
 function getInterestsTextValue(numChosenInterests) {
-    return `Choose some interests! (${numChosenInterests}/${maxInterests})`;
+    const leftToChoose = maxInterests - numChosenInterests;
+    if (leftToChoose > 1)
+        return `choose ${leftToChoose} interests.`;
+
+    return "choose 1 interest.";
 }
 
 function usernameInputUpdated(event) {
