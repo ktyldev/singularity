@@ -51,8 +51,6 @@ const localMode = false;
 const showSplash = true;
 
 const blockContainer = document.getElementById("block-container");
-const postCountElem = document.getElementById("post-count");
-const postTotalElem = document.getElementById("post-total");
 const loader = document.getElementById("loader");
 
 // some state
@@ -226,8 +224,6 @@ function addPosts(pageIdx) {
     const endRange = currentPage == getPageCount()
         ? posts.length
         : pageIdx * postIncrease;
-
-    postCountElem.innerHTML = endRange;
 
     const rootPosts = getRootPosts();
 
@@ -636,8 +632,6 @@ loadDataFromEndpoint(postsUrl, json => {
         const parent = posts[post.replyTo];
         parent.addReply(post);
     }
-
-    postTotalElem.innerHTML = Object.keys(posts).length;
 });
 
 if (!showSplash) {
