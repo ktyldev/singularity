@@ -1,4 +1,5 @@
-infinite scrolling
-https://webdesign.tutsplus.com/how-to-implement-infinite-scrolling-with-javascript--cms-37055t
+# singularity social.
+
+the last social platform you'll ever need.
 
 Icons from https://fontawesome.com/
